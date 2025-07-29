@@ -27,11 +27,25 @@ export interface OpenRouterResponse {
 }
 
 class OpenRouterAPI {
-  private apiKey: string = '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'
-  private baseURL: string = 'https://openrouter.ai/api/v1'
+  private apiKey: string
+  private baseURL: string
   private model: string = 'openai/gpt-3.5-turbo'
 
+  constructor() {
+    // Get API key from environment variables
+    this.apiKey = process.env.OPENROUTER_API_KEY || ''
+    this.baseURL = process.env.NEXT_PUBLIC_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1'
+    
+    if (!this.apiKey) {
+      console.error('OpenRouter API key not found. Please set OPENROUTER_API_KEY in your environment variables.')
+    }
+  }
+
   async sendMessage(messages: ChatMessage[]): Promise<string> {
+    if (!this.apiKey) {
+      throw new Error('OpenRouter API key is not configured. Please add OPENROUTER_API_KEY to your environment variables.')
+    }
+
     try {
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
@@ -74,6 +88,10 @@ class OpenRouterAPI {
     messages: ChatMessage[], 
     onChunk: (chunk: string) => void
   ): Promise<void> {
+    if (!this.apiKey) {
+      throw new Error('OpenRouter API key is not configured. Please add OPENROUTER_API_KEY to your environment variables.')
+    }
+
     try {
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',

@@ -84,6 +84,18 @@ export function AIAssistant({
     const text = messageText || inputValue.trim()
     if (!text || isLoading) return
 
+    // Check if AI assistant is enabled
+    if (!process.env.NEXT_PUBLIC_ENABLE_AI_ASSISTANT) {
+      const errorMessage: ChatMessage = {
+        role: 'assistant',
+        content: '⚠️ AI Assistant is currently disabled. Please contact your administrator to enable this feature.',
+        timestamp: Date.now(),
+        id: generateMessageId()
+      }
+      setMessages(prev => [...prev, errorMessage])
+      return
+    }
+
     const userMessage: ChatMessage = {
       role: 'user',
       content: text,
@@ -131,13 +143,17 @@ export function AIAssistant({
       )
     } catch (error) {
       console.error('Error sending message:', error)
+      let errorMessage = '❌ Sorry, I encountered an error. Please try again or check your connection.'
+      
+      // Check if it's an API key error
+      if (error instanceof Error && error.message.includes('API key')) {
+        errorMessage = '🔑 OpenRouter API key is not configured. Please add your API key to the environment variables to use the AI assistant.'
+      }
+      
       setMessages(prev => 
         prev.map(msg => 
           msg.id === assistantMessageId 
-            ? { 
-                ...msg, 
-                content: '❌ Sorry, I encountered an error. Please try again or check your connection.' 
-              }
+            ? { ...msg, content: errorMessage }
             : msg
         )
       )
