@@ -156,9 +156,26 @@ export function AIAssistant({
       console.error('Error sending message:', error)
       let errorMessage = '❌ Sorry, I encountered an error. Please try again or check your connection.'
       
-      // Check if it's an API key error
-      if (error instanceof Error && error.message.includes('API key')) {
-        errorMessage = '🔑 OpenRouter API key is not configured. Please add your API key to the environment variables to use the AI assistant.'
+      if (error instanceof Error) {  
+        // Check for specific error types
+        if (error.message.includes('API key') || error.message.includes('not configured')) {
+          errorMessage = '🔑 AI Assistant is not properly configured. Please contact support.'
+        } else if (error.message.includes('503') || error.message.includes('temporarily unavailable')) {
+          errorMessage = '⏳ AI service is temporarily unavailable. Please try again in a few moments.'
+        } else if (error.message.includes('401') || error.message.includes('unauthorized')) {
+          errorMessage = '🔒 AI service authentication failed. Please contact support.'
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = '🌐 Network error. Please check your internet connection and try again.'
+        } else if (error.message.includes('timeout')) {
+          errorMessage = '⏱️ Request timed out. Please try again with a shorter message.'
+        }
+        
+        // Log detailed error for debugging
+        console.error('AI Assistant Error Details:', {
+          message: error.message,
+          stack: error.stack,
+          timestamp: new Date().toISOString()
+        })
       }
       
       setMessages(prev => 
