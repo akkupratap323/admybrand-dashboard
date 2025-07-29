@@ -56,14 +56,15 @@ export class MCPDashboardClient {
     chartType: 'revenue' | 'userGrowth' | 'traffic',
     timeRange: '24h' | '7d' | '30d' | '90d' = '30d'
   ): Promise<ChartDataPoint[]> {
-    // Return mock chart data for production builds
+    // Return mock chart data for production builds - 50 data points
     const mockData: ChartDataPoint[] = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 50; i++) {
       mockData.push({
         date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        revenue: Math.floor(Math.random() * 10000) + 5000,
-        users: Math.floor(Math.random() * 500) + 100,
-        visitors: Math.floor(Math.random() * 1000) + 200
+        revenue: Math.floor(Math.random() * 15000) + 3000,
+        users: Math.floor(Math.random() * 800) + 50,
+        visitors: Math.floor(Math.random() * 1500) + 100,
+        source: ['Google', 'Facebook', 'Direct', 'Twitter', 'LinkedIn'][Math.floor(Math.random() * 5)]
       });
     }
     return Promise.resolve(mockData);
@@ -75,15 +76,35 @@ export class MCPDashboardClient {
     limit: number;
     totalPages: number;
   }> {
-    // Return mock customer data for production builds
-    const mockCustomers: Customer[] = [
-      { id: 1, name: "Alice Johnson", email: "alice@example.com", revenue: 15000, lastActive: "2024-01-15" },
-      { id: 2, name: "Bob Smith", email: "bob@example.com", revenue: 12000, lastActive: "2024-01-14" },
-      { id: 3, name: "Carol Brown", email: "carol@example.com", revenue: 18000, lastActive: "2024-01-13" }
-    ];
+    // Return mock customer data for production builds - 50 customers
+    const firstNames = ["Alice", "Bob", "Carol", "David", "Emma", "Frank", "Grace", "Henry", "Isabel", "Jack", "Kate", "Liam", "Maya", "Noah", "Olivia", "Peter", "Quinn", "Rachel", "Sam", "Tara", "Ulrich", "Vera", "Will", "Xara", "Yuki", "Zoe", "Adam", "Beth", "Chris", "Diana", "Eric", "Fiona", "George", "Hannah", "Ivan", "Julia", "Kevin", "Luna", "Mark", "Nina", "Oscar", "Paula", "Quincy", "Rita", "Steve", "Tina", "Uma", "Victor", "Wendy", "Xavier"];
+    const lastNames = ["Johnson", "Smith", "Brown", "Davis", "Wilson", "Miller", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson", "Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall", "Allen", "Young", "Hernandez", "King", "Wright", "Lopez", "Hill", "Scott", "Green", "Adams", "Baker", "Gonzalez", "Nelson", "Carter", "Mitchell", "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins", "Stewart", "Sanchez"];
+    
+    const mockCustomers: Customer[] = [];
+    for (let i = 1; i <= 50; i++) {
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
+      const revenue = Math.floor(Math.random() * 25000) + 5000;
+      const daysAgo = Math.floor(Math.random() * 30);
+      const lastActive = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      
+      mockCustomers.push({
+        id: i,
+        name: `${firstName} ${lastName}`,
+        email: email,
+        revenue: revenue,
+        lastActive: lastActive
+      });
+    }
+    
+    // Paginate the results
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedCustomers = mockCustomers.slice(startIndex, endIndex);
     
     return Promise.resolve({
-      customers: mockCustomers,
+      customers: paginatedCustomers,
       page: page,
       limit: limit,
       totalPages: Math.ceil(mockCustomers.length / limit)
