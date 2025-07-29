@@ -83,7 +83,7 @@ export function ScrollExpansion({
 
   if (stagger && React.Children.count(children) > 1) {
     return (
-      <div ref={elementRef} className={cn("overflow-hidden", className)}>
+      <div ref={elementRef as React.RefObject<HTMLDivElement>} className={cn("overflow-hidden", className)}>
         {React.Children.map(children, (child, index) => (
           <motion.div
             key={index}
@@ -109,7 +109,7 @@ export function ScrollExpansion({
 
   return (
     <motion.div
-      ref={elementRef}
+      ref={elementRef as React.RefObject<HTMLDivElement>}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
       variants={variants}
@@ -185,7 +185,7 @@ export function ProgressiveExpansion({
   }
 
   return (
-    <div ref={elementRef} className={cn("space-y-4", className)}>
+    <div ref={elementRef as React.RefObject<HTMLDivElement>} className={cn("space-y-4", className)}>
       <AnimatePresence>
         {stages.map((stage, index) => {
           const shouldShow = isVisible && currentStage >= index
@@ -229,7 +229,7 @@ export function ScrollReveal({
 
   return (
     <motion.div
-      ref={elementRef}
+      ref={elementRef as React.RefObject<HTMLDivElement>}
       className={cn("relative overflow-hidden", className)}
       initial={{ height: revealHeight }}
       animate={{
@@ -299,7 +299,7 @@ export function ExpandableCard({
 
   return (
     <motion.div
-      ref={elementRef}
+      ref={elementRef as React.RefObject<HTMLDivElement>}
       className={cn(
         "bg-card border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300",
         className
