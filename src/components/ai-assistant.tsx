@@ -28,10 +28,12 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
   getOpenRouterAPI, 
-  ChatMessage, 
+  ChatMessage
+} from "@/lib/openrouter-api"
+import { 
   getDashboardSystemPrompt, 
   getQuickQuestions 
-} from "@/lib/openrouter-api"
+} from "@/lib/ai-prompts"
 import { DashboardContext } from "@/components/ai-dashboard-context"
 import { cn } from "@/lib/utils"
 
