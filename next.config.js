@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // App directory is stable in Next.js 14 - no need for experimental flag
+  // Optimize for Vercel deployment
   images: {
     remotePatterns: [
       {
@@ -12,26 +12,45 @@ const nextConfig = {
         hostname: 'avatars.githubusercontent.com',
       },
     ],
+    formats: ['image/webp', 'image/avif'],
   },
-  // Performance optimizations
+  
+  // Performance and security optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Ensure proper static generation for Vercel
+  
+  // Disable features that might cause issues
   generateEtags: false,
   poweredByHeader: false,
-  // Add rewrite rules for proper routing
-  async rewrites() {
+  
+  // Optimize build output
+  swcMinify: true,
+  
+  // Remove problematic experimental features
+  // experimental: {
+  //   optimizeCss: true,
+  //   gzipSize: true,
+  // },
+
+  // Ensure proper routing for SPA behavior
+  async redirects() {
+    return []
+  },
+
+  async headers() {
     return [
       {
-        source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
-        destination: '/',
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, stale-while-revalidate=86400',
+          },
+        ],
       },
     ]
   },
-  // Enable static exports if needed
-  // output: 'export',
-  // trailingSlash: true,
 }
 
 module.exports = nextConfig
