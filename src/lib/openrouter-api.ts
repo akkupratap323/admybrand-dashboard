@@ -36,15 +36,17 @@ class OpenRouterAPI {
     this.apiKey = process.env.OPENROUTER_API_KEY || ''
     this.baseURL = process.env.NEXT_PUBLIC_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1'
     
+    // Don't log error in constructor to avoid issues during module loading
+  }
+
+  private validateApiKey(): void {
     if (!this.apiKey) {
-      console.error('OpenRouter API key not found. Please set OPENROUTER_API_KEY in your environment variables.')
+      throw new Error('OpenRouter API key not found. Please set OPENROUTER_API_KEY in your environment variables.')
     }
   }
 
   async sendMessage(messages: ChatMessage[]): Promise<string> {
-    if (!this.apiKey) {
-      throw new Error('OpenRouter API key is not configured. Please add OPENROUTER_API_KEY to your environment variables.')
-    }
+    this.validateApiKey()
 
     try {
       const response = await fetch(`${this.baseURL}/chat/completions`, {
@@ -88,9 +90,7 @@ class OpenRouterAPI {
     messages: ChatMessage[], 
     onChunk: (chunk: string) => void
   ): Promise<void> {
-    if (!this.apiKey) {
-      throw new Error('OpenRouter API key is not configured. Please add OPENROUTER_API_KEY to your environment variables.')
-    }
+    this.validateApiKey()
 
     try {
       const response = await fetch(`${this.baseURL}/chat/completions`, {
@@ -157,7 +157,15 @@ class OpenRouterAPI {
   }
 }
 
-export const openRouterAPI = new OpenRouterAPI()
+// Lazy instantiation to avoid errors during module loading
+let _openRouterAPIInstance: OpenRouterAPI | null = null
+
+export const getOpenRouterAPI = (): OpenRouterAPI => {
+  if (!_openRouterAPIInstance) {
+    _openRouterAPIInstance = new OpenRouterAPI()
+  }
+  return _openRouterAPIInstance
+}
 
 // Dashboard-specific system prompts
 export const getDashboardSystemPrompt = (): string => {

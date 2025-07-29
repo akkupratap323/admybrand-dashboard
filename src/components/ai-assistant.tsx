@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
-  openRouterAPI, 
+  getOpenRouterAPI, 
   ChatMessage, 
   getDashboardSystemPrompt, 
   getQuickQuestions 
@@ -129,7 +129,7 @@ export function AIAssistant({
     try {
       const conversationMessages = [systemMessage, ...messages.slice(-6), userMessage]
       
-      await openRouterAPI.sendStreamMessage(
+      await getOpenRouterAPI().sendStreamMessage(
         conversationMessages,
         (chunk: string) => {
           setMessages(prev => 

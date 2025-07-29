@@ -93,6 +93,7 @@ describe('MetricsCards', () => {
     expect(screen.getByText('$0.00')).toBeInTheDocument()
     expect(screen.getByText('0')).toBeInTheDocument()
   })
+  
 
   it('has proper accessibility attributes', () => {
     render(<MetricsCards data={mockData} />)
