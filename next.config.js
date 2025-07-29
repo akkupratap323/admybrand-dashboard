@@ -17,6 +17,18 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  // Ensure proper static generation for Vercel
+  generateEtags: false,
+  poweredByHeader: false,
+  // Add rewrite rules for proper routing
+  async rewrites() {
+    return [
+      {
+        source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
+        destination: '/',
+      },
+    ]
+  },
   // Enable static exports if needed
   // output: 'export',
   // trailingSlash: true,
