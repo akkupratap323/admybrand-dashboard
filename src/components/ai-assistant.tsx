@@ -85,7 +85,7 @@ export function AIAssistant({
     if (!text || isLoading) return
 
     // Check if AI assistant is enabled
-    if (!process.env.NEXT_PUBLIC_ENABLE_AI_ASSISTANT) {
+    if (process.env.NEXT_PUBLIC_ENABLE_AI_ASSISTANT !== 'true') {
       const errorMessage: ChatMessage = {
         role: 'assistant',
         content: '⚠️ AI Assistant is currently disabled. Please contact your administrator to enable this feature.',
@@ -211,8 +211,10 @@ export function AIAssistant({
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         className={cn(
-          "fixed bottom-4 right-4 bg-background border shadow-2xl rounded-xl z-50 overflow-hidden",
-          "flex flex-col max-w-2xl w-full max-h-[85vh]"
+          "fixed bg-background border shadow-2xl rounded-xl z-50 overflow-hidden",
+          "flex flex-col w-full max-h-[85vh]",
+          "bottom-4 right-4 left-4 md:left-auto md:right-4 md:w-[600px] max-w-2xl",
+          "sm:bottom-4 sm:left-4 sm:right-4 md:left-auto"
         )}
       >
         {/* Header */}

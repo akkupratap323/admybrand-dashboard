@@ -1,19 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, lazy, Suspense, memo, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { MetricsGrid } from "@/components/metrics/metrics-grid"
 import { ChartsGrid } from "@/components/charts/charts-grid"
 import { DataTable } from "@/components/data-table/data-table"
-import { RealTimeDashboard } from "@/components/real-time-dashboard"
-import { InteractiveChart, ChartGallery } from "@/components/interactive-charts"
-import { ReportingSystem } from "@/components/reporting-system"
-import { ScrollDemoDashboard } from "@/components/scroll-demo-dashboard"
 import { generateAnalyticsData } from "@/lib/utils/mock-data-generator"
 
-export default function Dashboard() {
+// Lazy load heavy components
+const RealTimeDashboard = lazy(() => import("@/components/real-time-dashboard").then(module => ({ default: module.RealTimeDashboard })))
+const InteractiveChart = lazy(() => import("@/components/interactive-charts").then(module => ({ default: module.InteractiveChart })))
+const ChartGallery = lazy(() => import("@/components/interactive-charts").then(module => ({ default: module.ChartGallery })))
+const ReportingSystem = lazy(() => import("@/components/reporting-system").then(module => ({ default: module.ReportingSystem })))
+const ScrollDemoDashboard = lazy(() => import("@/components/scroll-demo-dashboard").then(module => ({ default: module.ScrollDemoDashboard })))
+
+// Loading component
+const ComponentLoader = () => (
+  <div className="flex items-center justify-center py-8">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>
+)
+
+// Memoized Dashboard component for better performance
+const Dashboard = memo(function Dashboard() {
   const [data, setData] = useState<ReturnType<typeof generateAnalyticsData> | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("overview")
@@ -22,22 +33,22 @@ export default function Dashboard() {
     const timer = setTimeout(() => {
       setData(generateAnalyticsData())
       setLoading(false)
-    }, 1500)
+    }, 800) // Reduced loading time
 
     return () => clearTimeout(timer)
   }, [])
 
-  // Sample chart data for the interactive charts
-  const sampleChartData = [
+  // Memoized chart data to avoid re-computation
+  const sampleChartData = useMemo(() => [
     { name: 'Jan', value: 4000, category: 'A' },
     { name: 'Feb', value: 3000, category: 'B' },
     { name: 'Mar', value: 5000, category: 'A' },
     { name: 'Apr', value: 4500, category: 'C' },
     { name: 'May', value: 6000, category: 'A' },
     { name: 'Jun', value: 5500, category: 'B' },
-  ]
+  ], [])
 
-  const chartGalleryData = [
+  const chartGalleryData = useMemo(() => [
     {
       id: "revenue-trend",
       title: "Revenue Trend",
@@ -71,7 +82,7 @@ export default function Dashboard() {
       ],
       color: "#f59e0b"
     }
-  ]
+  ], [sampleChartData])
 
   return (
     <DashboardLayout 
@@ -96,24 +107,30 @@ export default function Dashboard() {
 
         {/* Enhanced Tabbed Interface */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:grid-cols-6">
-            <TabsTrigger value="overview" className="flex items-center space-x-2">
-              <span>Overview</span>
+          <TabsList className="grid w-full grid-cols-3 gap-1 sm:grid-cols-6 lg:w-auto lg:grid-cols-6">
+            <TabsTrigger value="overview" className="flex items-center justify-center px-2 py-1 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Overview</span>
+              <span className="sm:hidden">Home</span>
             </TabsTrigger>
-            <TabsTrigger value="realtime" className="flex items-center space-x-2">
-              <span>Real-time</span>
+            <TabsTrigger value="realtime" className="flex items-center justify-center px-2 py-1 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Real-time</span>
+              <span className="sm:hidden">Live</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center space-x-2">
-              <span>Analytics</span>
+            <TabsTrigger value="analytics" className="flex items-center justify-center px-2 py-1 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Stats</span>
             </TabsTrigger>
-            <TabsTrigger value="customers" className="flex items-center space-x-2">
-              <span>Customers</span>
+            <TabsTrigger value="customers" className="flex items-center justify-center px-2 py-1 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Customers</span>
+              <span className="sm:hidden">Users</span>
             </TabsTrigger>
-            <TabsTrigger value="scroll-demo" className="flex items-center space-x-2">
-              <span>Scroll Demo</span>
+            <TabsTrigger value="scroll-demo" className="flex items-center justify-center px-2 py-1 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Scroll Demo</span>
+              <span className="sm:hidden">Demo</span>
             </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center space-x-2">
-              <span>Reports</span>
+            <TabsTrigger value="reports" className="flex items-center justify-center px-2 py-1 text-xs sm:text-sm">
+              <span className="hidden sm:inline">Reports</span>
+              <span className="sm:hidden">Docs</span>
             </TabsTrigger>
           </TabsList>
 
@@ -168,11 +185,13 @@ export default function Dashboard() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <RealTimeDashboard 
-                  autoRefresh={true}
-                  refreshInterval={3000}
-                  onMetricClick={(metric) => console.log('Metric clicked:', metric)}
-                />
+                <Suspense fallback={<ComponentLoader />}>
+                  <RealTimeDashboard 
+                    autoRefresh={true}
+                    refreshInterval={3000}
+                    onMetricClick={(metric) => console.log('Metric clicked:', metric)}
+                  />
+                </Suspense>
               </motion.div>
             </TabsContent>
 
@@ -192,33 +211,39 @@ export default function Dashboard() {
                       Drill down into your data with interactive visualizations
                     </p>
                   </div>
-                  <ChartGallery charts={chartGalleryData} />
+                  <Suspense fallback={<ComponentLoader />}>
+                    <ChartGallery charts={chartGalleryData} />
+                  </Suspense>
                 </div>
 
                 {/* Advanced Metrics */}
                 <div>
                   <h3 className="text-lg font-semibold mb-4">Advanced Metrics</h3>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <InteractiveChart
-                      title="Revenue Growth Analysis"
-                      data={sampleChartData}
-                      type="area"
-                      color="#10b981"
-                      height={400}
-                      enableDrillDown={true}
-                      enableZoom={true}
-                      enableExport={true}
-                    />
-                    <InteractiveChart
-                      title="User Engagement Metrics"
-                      data={sampleChartData.map(d => ({ ...d, value: d.value * 0.6 }))}
-                      type="line"
-                      color="#3b82f6"
-                      height={400}
-                      enableDrillDown={true}
-                      enableZoom={true}
-                      enableExport={true}
-                    />
+                    <Suspense fallback={<ComponentLoader />}>
+                      <InteractiveChart
+                        title="Revenue Growth Analysis"
+                        data={sampleChartData}
+                        type="area"
+                        color="#10b981"
+                        height={400}
+                        enableDrillDown={true}
+                        enableZoom={true}
+                        enableExport={true}
+                      />
+                    </Suspense>
+                    <Suspense fallback={<ComponentLoader />}>
+                      <InteractiveChart
+                        title="User Engagement Metrics"
+                        data={sampleChartData.map(d => ({ ...d, value: d.value * 0.6 }))}
+                        type="line"
+                        color="#3b82f6"
+                        height={400}
+                        enableDrillDown={true}
+                        enableZoom={true}
+                        enableExport={true}
+                      />
+                    </Suspense>
                   </div>
                 </div>
               </motion.div>
@@ -272,7 +297,9 @@ export default function Dashboard() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <ScrollDemoDashboard />
+                <Suspense fallback={<ComponentLoader />}>
+                  <ScrollDemoDashboard />
+                </Suspense>
               </motion.div>
             </TabsContent>
 
@@ -283,7 +310,9 @@ export default function Dashboard() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <ReportingSystem />
+                <Suspense fallback={<ComponentLoader />}>
+                  <ReportingSystem />
+                </Suspense>
               </motion.div>
             </TabsContent>
           </AnimatePresence>
@@ -291,4 +320,6 @@ export default function Dashboard() {
       </div>
     </DashboardLayout>
   )
-}
+})
+
+export default Dashboard
