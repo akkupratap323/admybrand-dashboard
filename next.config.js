@@ -21,18 +21,10 @@ const nextConfig = {
   },
   
   // Disable features that might cause issues
-  generateEtags: false,
   poweredByHeader: false,
   
-  // Optimize build output
-  swcMinify: true,
+  // Removed swcMinify as it's enabled by default in Next.js 15
   
-  // Remove problematic experimental features
-  // experimental: {
-  //   optimizeCss: true,
-  //   gzipSize: true,
-  // },
-
   // Ensure proper routing for SPA behavior
   async redirects() {
     return []
