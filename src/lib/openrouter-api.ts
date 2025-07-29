@@ -32,11 +32,16 @@ class OpenRouterAPI {
   private model: string = 'openai/gpt-3.5-turbo'
 
   constructor() {
-    // Get API key from environment variables
-    this.apiKey = process.env.OPENROUTER_API_KEY || ''
-    this.baseURL = process.env.NEXT_PUBLIC_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1'
-    
-    // Don't log error in constructor to avoid issues during module loading
+    // Only initialize API key on server side where environment variables are available
+    if (typeof window === 'undefined') {
+      // Server side - environment variables are available
+      this.apiKey = process.env.OPENROUTER_API_KEY || ''
+      this.baseURL = process.env.NEXT_PUBLIC_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1'
+    } else {
+      // Client side - use empty values, API calls should go through /api/chat route
+      this.apiKey = ''
+      this.baseURL = 'https://openrouter.ai/api/v1'
+    }
   }
 
   private validateApiKey(): void {

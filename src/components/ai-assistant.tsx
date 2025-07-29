@@ -26,10 +26,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { 
-  getOpenRouterAPI, 
-  ChatMessage
-} from "@/lib/openrouter-api"
+import { ChatMessage } from "@/lib/openrouter-api"
 import { 
   getDashboardSystemPrompt, 
   getQuickQuestions 
@@ -131,17 +128,29 @@ export function AIAssistant({
     try {
       const conversationMessages = [systemMessage, ...messages.slice(-6), userMessage]
       
-      await getOpenRouterAPI().sendStreamMessage(
-        conversationMessages,
-        (chunk: string) => {
-          setMessages(prev => 
-            prev.map(msg => 
-              msg.id === assistantMessageId 
-                ? { ...msg, content: msg.content + chunk }
-                : msg
-            )
-          )
-        }
+      // Call our API route instead of OpenRouter directly
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ messages: conversationMessages }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to get response from AI assistant')
+      }
+
+      const data = await response.json()
+      
+      // Update the assistant message with the response
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === assistantMessageId 
+            ? { ...msg, content: data.response }
+            : msg
+        )
       )
     } catch (error) {
       console.error('Error sending message:', error)
