@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "admybrand-insights": {
+      "command": "node",
+      "args": ["./mcp-server.js"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  }
+}
