@@ -1,30 +1,8 @@
 // OpenRouter API integration for AI assistant
-export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system'
-  content: string
-  timestamp?: number
-  id?: string
-}
+import { ChatMessage, OpenRouterResponse } from './chat-types'
 
-export interface OpenRouterResponse {
-  id: string
-  object: string
-  created: number
-  model: string
-  choices: Array<{
-    index: number
-    message: {
-      role: string
-      content: string
-    }
-    finish_reason: string
-  }>
-  usage: {
-    prompt_tokens: number
-    completion_tokens: number
-    total_tokens: number
-  }
-}
+// Re-export types for backward compatibility
+export type { ChatMessage, OpenRouterResponse }
 
 class OpenRouterAPI {
   private apiKey: string
@@ -38,9 +16,8 @@ class OpenRouterAPI {
       this.apiKey = process.env.OPENROUTER_API_KEY || ''
       this.baseURL = process.env.NEXT_PUBLIC_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1'
     } else {
-      // Client side - use empty values, API calls should go through /api/chat route
-      this.apiKey = ''
-      this.baseURL = 'https://openrouter.ai/api/v1'
+      // Client side - throw error since this should never be instantiated on client
+      throw new Error('OpenRouter API should not be instantiated on the client side. Use /api/chat route instead.')
     }
   }
 
@@ -59,7 +36,7 @@ class OpenRouterAPI {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
+          'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://admybrand-dashboard.vercel.app',
           'X-Title': 'ADmyBRAND Insights Dashboard'
         },
         body: JSON.stringify({
@@ -103,7 +80,7 @@ class OpenRouterAPI {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
+          'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://admybrand-dashboard.vercel.app',
           'X-Title': 'ADmyBRAND Insights Dashboard'
         },
         body: JSON.stringify({
@@ -166,6 +143,11 @@ class OpenRouterAPI {
 let _openRouterAPIInstance: OpenRouterAPI | null = null
 
 export const getOpenRouterAPI = (): OpenRouterAPI => {
+  // Only allow instantiation on server side
+  if (typeof window !== 'undefined') {
+    throw new Error('OpenRouter API should only be used on the server side. Use /api/chat route from client components.')
+  }
+  
   if (!_openRouterAPIInstance) {
     _openRouterAPIInstance = new OpenRouterAPI()
   }

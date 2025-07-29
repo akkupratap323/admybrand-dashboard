@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getOpenRouterAPI, ChatMessage } from '@/lib/openrouter-api'
+import { getOpenRouterAPI } from '@/lib/openrouter-api'
+import { ChatMessage } from '@/lib/chat-types'
 
 export async function POST(request: NextRequest) {
   try {

@@ -171,21 +171,21 @@ export function DashboardLayout({ children, activeTab = "overview", onTabChange 
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 bottom-0 left-0 z-50 w-56 bg-card border-r transform transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 sm:w-56 bg-card border-r transform transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between h-14 px-4 border-b bg-gradient-to-r from-primary/5 to-primary/10">
+        <div className="flex items-center justify-between h-14 px-3 sm:px-4 border-b bg-gradient-to-r from-primary/5 to-primary/10">
           <motion.div 
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg flex-shrink-0">
               <span className="text-white font-bold text-sm">AD</span>
             </div>
-            <div>
-              <h1 className="font-bold text-lg bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <h1 className="font-bold text-base sm:text-lg bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent truncate">
                 ADmyBRAND
               </h1>
               <p className="text-xs text-muted-foreground">Insights</p>
@@ -200,7 +200,7 @@ export function DashboardLayout({ children, activeTab = "overview", onTabChange 
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <nav className="p-3 space-y-2">
+        <nav className="p-3 sm:p-4 space-y-2 overflow-y-auto flex-1">
           {menuItems.map((item, index) => (
             <motion.div
               key={item.name}
@@ -210,7 +210,7 @@ export function DashboardLayout({ children, activeTab = "overview", onTabChange 
             >
               <Button
                 variant={item.active ? "secondary" : "ghost"}
-                className={`w-full justify-start h-11 transition-all duration-200 ${
+                className={`w-full justify-start h-11 sm:h-10 transition-all duration-200 text-sm sm:text-base ${
                   item.active 
                     ? "bg-primary/10 border border-primary/20 shadow-sm" 
                     : "hover:bg-muted/80"
@@ -222,8 +222,8 @@ export function DashboardLayout({ children, activeTab = "overview", onTabChange 
                   setIsOpen(false) // Close mobile menu
                 }}
               >
-                <item.icon className="mr-3 h-5 w-5" />
-                <span className="font-medium">{item.name}</span>
+                <item.icon className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                <span className="font-medium truncate">{item.name}</span>
                 {item.active && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0 }}
@@ -260,40 +260,52 @@ export function DashboardLayout({ children, activeTab = "overview", onTabChange 
       {/* Main content */}
       <div className="lg:ml-56">
         {/* Header */}
-        <header className="fixed top-0 right-0 left-0 lg:left-56 z-40 h-16 border-b bg-background/80 backdrop-blur-md shadow-sm">
-          <div className="flex items-center justify-between h-full px-4">
-            <div className="flex items-center space-x-4">
+        <header className="fixed top-0 right-0 left-0 lg:left-56 z-40 h-14 sm:h-16 border-b bg-background/80 backdrop-blur-md shadow-sm">
+          <div className="flex items-center justify-between h-full px-3 sm:px-4">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden"
+                className="lg:hidden h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
                 onClick={() => setIsOpen(true)}
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
               
-              {/* Global Search Toggle */}
+              {/* Mobile Search Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="md:hidden h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0"
+              >
+                <Search className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+              
+              {/* Desktop Search Toggle */}
               <Button
                 variant="ghost"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="hidden md:flex items-center space-x-2 text-muted-foreground hover:text-foreground"
+                className="hidden md:flex items-center space-x-2 text-muted-foreground hover:text-foreground min-w-0"
               >
-                <Search className="h-4 w-4" />
-                <span className="text-sm">Search...</span>
-                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground">
+                <Search className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm hidden lg:inline">Search...</span>
+                <kbd className="pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground">
                   ⌘K
                 </kbd>
               </Button>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
               {/* Notifications */}
-              <NotificationSystem
-                notifications={notifications.notifications}
-                onMarkAsRead={notifications.markAsRead}
-                onDismiss={notifications.dismiss}
-                onClearAll={notifications.clearAll}
-              />
+              <div className="hidden sm:block">
+                <NotificationSystem
+                  notifications={notifications.notifications}
+                  onMarkAsRead={notifications.markAsRead}
+                  onDismiss={notifications.dismiss}
+                  onClearAll={notifications.clearAll}
+                />
+              </div>
               
               {/* Theme Toggle */}
               <ThemeToggle />
@@ -303,9 +315,9 @@ export function DashboardLayout({ children, activeTab = "overview", onTabChange 
                 <Button
                   variant="ghost"
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="relative h-10 w-10 rounded-full p-0"
+                  className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full p-0"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs sm:text-sm">
                     JD
                   </div>
                 </Button>
@@ -348,8 +360,8 @@ export function DashboardLayout({ children, activeTab = "overview", onTabChange 
         )}
 
         {/* Page content */}
-        <main className="min-h-screen pt-16">
-          <div className="p-6">
+        <main className="min-h-screen pt-14 sm:pt-16">
+          <div className="p-3 sm:p-4 lg:p-6">
             {children}
           </div>
         </main>

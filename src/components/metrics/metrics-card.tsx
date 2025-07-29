@@ -88,7 +88,7 @@ export function MetricsCard({
   if (loading) {
     return (
       <Card className="overflow-hidden border-0 bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm">
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="h-10 w-10 bg-muted/60 rounded-lg animate-pulse" />
@@ -113,20 +113,20 @@ export function MetricsCard({
       transition={{ duration: 0.3 }}
     >
       <Card className={`overflow-hidden border bg-gradient-to-br from-card to-card/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group ${colorClasses.border}`}>
-        <CardContent className="p-6 relative">
+        <CardContent className="p-4 sm:p-6 relative">
           {/* Background Gradient */}
           <div className={`absolute inset-0 bg-gradient-to-br opacity-50 group-hover:opacity-70 transition-opacity duration-300 ${colorClasses.gradient}`} />
           
           {/* Content */}
-          <div className="relative space-y-4">
+          <div className="relative space-y-3 sm:space-y-4">
             {/* Header with Icon */}
             <div className="flex items-center justify-between">
               <motion.div 
-                className={`p-3 rounded-xl ${colorClasses.iconBg} ${colorClasses.iconText}`}
+                className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${colorClasses.iconBg} ${colorClasses.iconText}`}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                <Icon className="h-6 w-6" />
+                <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
               </motion.div>
               <div className="flex items-center space-x-1">
                 <motion.div 
@@ -135,10 +135,10 @@ export function MetricsCard({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  {isPositive ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                  {isPositive ? <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" /> : <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4" />}
                 </motion.div>
                 <motion.span 
-                  className={`text-sm font-medium ${
+                  className={`text-xs sm:text-sm font-medium ${
                     isPositive ? "text-emerald-500 dark:text-emerald-400" : "text-red-500 dark:text-red-400"
                   }`}
                   initial={{ opacity: 0 }}
@@ -152,9 +152,9 @@ export function MetricsCard({
 
             {/* Title and Description */}
             <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">{title}</p>
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
               {description && (
-                <p className="text-xs text-muted-foreground/80">{description}</p>
+                <p className="text-xs text-muted-foreground/80 line-clamp-2 sm:line-clamp-none">{description}</p>
               )}
             </div>
 
@@ -164,7 +164,7 @@ export function MetricsCard({
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.1 }}
-              className="text-3xl font-bold text-foreground"
+              className="text-2xl sm:text-3xl font-bold text-foreground truncate"
             >
               {prefix}{formattedValue}{suffix}
             </motion.div>

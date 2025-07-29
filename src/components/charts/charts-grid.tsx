@@ -9,7 +9,7 @@ export function ChartsGrid() {
   const { data, loading } = useRealtimeUpdates(5000)
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
       <div className="lg:col-span-2">
         <AreaChart
           title="Revenue Growth"
